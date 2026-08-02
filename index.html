@@ -24,6 +24,48 @@
                 width: device-width;
             }
         </style>
+                        <script>
+window.thepage = new URL(location.href)
+window.thevidid = location.pathname.slice(1)
+
+async function getVideoInfo(id) {
+  const res = await fetch(
+    "https://www.youtube.com/oembed?url=" +
+    encodeURIComponent("https://www.youtube.com/watch?v=" + id) +
+    "&format=json"
+  );
+
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+
+  return await res.json();
+}
+
+async function init() {
+  try {
+    window.thebed = await getVideoInfo(thevidid);
+  } catch (e) {
+    window.thebed = {
+      title: `Error: ${e.message || e}`,
+      author_name: "Error",
+      author_url: "https://www.youtube.com/@error",
+      type: "video",
+      height: 150,
+      width: 200,
+      version: "1.0",
+      provider_name: "YouTube",
+      provider_url: "https://www.youtube.com/",
+      thumbnail_height: 360,
+      thumbnail_width: 480,
+      thumbnail_url: "https://i.ytimg.com/vi/2mcWQMzELbc/hqdefault.jpg",
+      html: null
+    };
+  }
+}
+
+init();
+        </script>
         <script>
             var ytcsi = {
                 tick: function() {},
@@ -46,7 +88,7 @@
             yt.setMsg({
                 'FLASH_UPGRADE': '<div class=\"yt-alert yt-alert-default yt-alert-error  yt-alert-player\">  <div class=\"yt-alert-icon\">\n    <img src=\"\/\/s.ytimg.com\/yts\/img\/pixel-vfl3z5WfW.gif\" class=\"icon master-sprite\" alt=\"Alert icon\">\n  <\/div>\n<div class=\"yt-alert-buttons\"><\/div><div class=\"yt-alert-content\" role=\"alert\">    <span class=\"yt-alert-vertical-trick\"><\/span>\n    <div class=\"yt-alert-message\">\n            You need to upgrade your Adobe Flash Player to watch this video. <br> <a href=\"http:\/\/get.adobe.com\/flashplayer\/\">Download it from Adobe.<\/a>\n    <\/div>\n<\/div><\/div>'
             });
-            yt.setConfig({
+            setTimeout(() => {yt.setConfig({
                 'PLAYER_CONFIG': {
                     "sts": 1578,
                     "html5": true,
@@ -64,7 +106,9 @@
                         "rel": "1",
                         "hl": "en_US",
                         "enablejsapi": "0",
-                        "cr": "US"
+                        "cr": "US",
+                        "iurl": window.thebed.thumbnail_url,
+                        "title": window.thebed.title
                     },
                     "assets": {
                         "html": "\/template",
@@ -87,7 +131,7 @@
             yt.setMsg('PLAYER_FALLBACK', "The Adobe Flash Player or an HTML5 supported browser is required for video playback. \u003cbr\u003e \u003ca href=\"http:\/\/get.adobe.com\/flashplayer\/\"\u003eGet the latest Flash Player\u003c\/a\u003e \u003cbr\u003e \u003ca href=\"\/html5\"\u003eLearn more about upgrading to an HTML5 browser\u003c\/a\u003e");
             yt.setMsg('QUICKTIME_FALLBACK', "The Adobe Flash Player or QuickTime is required for video playback. \u003cbr\u003e \u003ca href=\"http:\/\/get.adobe.com\/flashplayer\/\"\u003eGet the latest Flash Player\u003c\/a\u003e \u003cbr\u003e \u003ca href=\"http:\/\/www.apple.com\/quicktime\/download\/\"\u003eGet the latest version of QuickTime\u003c\/a\u003e");
 
-            yt.embed.writeEmbed();
+            yt.embed.writeEmbed();},5000)
         </script>
     </body>
 </html>
