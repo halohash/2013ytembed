@@ -1,24 +1,37 @@
-// functions/oembed.js
 
 export async function onRequestGet({ request }) {
-  const url = new URL(request.url);
-  const video = url.searchParams.get("url");
+  const requestUrl = new URL(request.url);
 
-  if (!video) {
+  // Use ?url= first
+  let videoUrl = requestUrl.searchParams.get("url");
+
+  // Otherwise derive it from the Referer
+  if (!videoUrl) {
+    const referer = request.headers.get("Referer");
+
+    if (referer) {
+      videoUrl = referer.replace(/^https:\/\/embed36\.pages\.dev/, "");
+    }
+  }
+
+  if (!videoUrl) {
     return Response.json(
-      { error: 'Missing "url" query parameter.' },
+      {
+        error:
+          'Missing "url" parameter and no usable Referer header was provided.'
+      },
       { status: 400 }
     );
   }
 
   const endpoint =
     "https://www.youtube.com/oembed?format=json&url=" +
-    encodeURIComponent(video);
+    encodeURIComponent(videoUrl);
 
   const res = await fetch(endpoint, {
     headers: {
-      "User-Agent": "Mozilla/5.0"
-    }
+      "User-Agent": "Mozilla/5.0",
+    },
   });
 
   if (!res.ok) {
@@ -41,7 +54,7 @@ export async function onRequestGet({ request }) {
       public_name: data.author_name,
       channel_title: data.author_name,
       subscriber_count_string: null,
-      channel_banner_url: null
+      channel_banner_url: null,
     },
 
     video_info: {
@@ -59,13 +72,14 @@ export async function onRequestGet({ request }) {
       height: data.height,
       version: data.version,
 
+      // Not available from oEmbed
       description: null,
       likes_count_unformatted: null,
       dislikes_count_unformatted: null,
       likes_dislikes_string: null,
       view_count: null,
       view_count_string: null,
-      subscription_ajax_token: null
-    }
+      subscription_ajax_token: null,
+    },
   });
 }
