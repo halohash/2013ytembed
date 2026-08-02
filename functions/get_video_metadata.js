@@ -3,17 +3,31 @@ export async function onRequestGet({ request }) {
   const requestUrl = new URL(request.url);
 
   // Use ?url= first
-  let videoUrl = requestUrl.searchParams.get("url");
+const requestUrl = new URL(request.url);
 
-  // Otherwise derive it from the Referer
-  if (!videoUrl) {
-    const referer = request.headers.get("Referer");
+let videoUrl = requestUrl.searchParams.get("url");
 
-    if (referer) {
+if (!videoUrl) {
+  const referer = request.headers.get("Referer");
+
+  if (referer) {
+    const path = new URL(referer).pathname.slice(1); // "wvrKOwml5t8"
+
+    if (/^[A-Za-z0-9_-]{11}$/.test(path)) {
+      // Looks like a YouTube video ID
+      videoUrl = `https://www.youtube.com/watch?v=${path}`;
+    } else {
+      // Fall back to stripping the origin
       videoUrl = referer.replace(/^https:\/\/embed36\.pages\.dev/, "");
+
+      // Convert relative URLs like /watch?v=...
+      if (videoUrl.startsWith("/")) {
+        videoUrl = "https://www.youtube.com" + videoUrl;
+      }
     }
   }
-
+}
+  
   if (!videoUrl) {
     return Response.json(
       {
