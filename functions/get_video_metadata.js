@@ -56,7 +56,7 @@ if (!videoUrl) {
 
   return Response.json({
     user_info: {
-      channel_logo_url: null,
+      channel_logo_url: "https://unavatar.io/youtube/" + data.author_name,
       username: data.author_name,
       subscriber_count: null,
       external_id: null,
