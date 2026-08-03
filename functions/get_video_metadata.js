@@ -49,8 +49,7 @@ if (!videoUrl) {
   });
 
   if (!res.ok) {
-    return Response.json(
-      { error: "Video not found." },
+    return Response.json("Error " + videoUrl,
       { status: res.status }
     );
   }
