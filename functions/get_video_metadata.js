@@ -2,8 +2,6 @@
 export async function onRequestGet({ request }) {
   const requestUrl = new URL(request.url);
 
-  // Use ?url= first
-const requestUrl = new URL(request.url);
 
 let videoUrl = requestUrl.searchParams.get("url");
 
