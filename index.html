@@ -617,25 +617,192 @@ Turn off converted 3D
 <div id="player" class="full-frame"></div>  <script id="js-1744172062" class="www-embed-player" src="//s.ytimg.com/yts/jsbin/www-embed-player-vflmfQzGM.js" data-loaded="true"></script>
   <script id="js-2886691528" class="html5player" src="//s.ytimg.com/yts/jsbin/html5player-vfl66X2C5.js" data-loaded="true"></script>
 <script>
-    invurl = "https://www.invidious.frantisekfiala.eu/api/v1/videos/" + window.location.pathname.substring(1);
-    var invidious = await fetch(invurl);
-    
-    if (invidious.ok) {
-window.inv = await invidious.json();
+    <script>
+(async function () {
+    try {
+        var videoId = window.location.pathname.substring(1);
 
-yt.setConfig({'EVENT_ID': "AxCcUrLVPOXiiwK17oDgDw",'VIDEO_ID': window.inv.videoId,'POST_MESSAGE_ORIGIN': "*",'EURL': "https://www.businessinsider.com\/every-first-on-the-internet-2013-2?op=1",'PL_ATT': false});</script><script>  yt.setConfig({
-      'PLAYER_CONFIG': {"min_version": "8.0.0", "url_v8": "https://s.ytimg.com\/yts\/swfbin\/player-vfl6Oox_F\/cps.swf", "attrs": {"width": "100%", "height": "100%", "id": "video-player"}, "assets": {"html": "\/html5_player_template", "js": "\/\/s.ytimg.com\/yts\/jsbin\/html5player-vfl66X2C5.js", "css": "\/\/s.ytimg.com\/yts\/cssbin\/www-player-vflzE0TL9.css"}, "html5": true, "sts": 16031, "url_v9as2": "https://s.ytimg.com\/yts\/swfbin\/player-vfl6Oox_F\/cps.swf", "args": {"avg_rating": 4.77432906265, "length_seconds": 19, "video_id": window.inv.videoId, "threed_module": "https://s.ytimg.com\/yts\/swfbin\/player-vfl6Oox_F\/threed.swf", "ldpj": "-37", "allow_ratings": 1, "share_icons": "https://s.ytimg.com\/yts\/swfbin\/player-vfl6Oox_F\/sharing.swf", "allow_embed": 1, "cr": "IL", "playlist_module": "https://s.ytimg.com\/yts\/swfbin\/player-vfl6Oox_F\/playlist_module.swf", "hl": "en_US", "idpj": "0", "sendtmp": "1", "view_count": 13088874, "enablejsapi": "0", "is_html5_mobile_device": false, "streaminglib_module": "https://s.ytimg.com\/yts\/swfbin\/player-vfl6Oox_F\/streaminglib.swf", "endscreen_module": "https://s.ytimg.com\/yts\/swfbin\/player-vfl6Oox_F\/endscreen.swf", "fexp": "900225,935203,904825,907230,916623,901442,936912,936910,923305,936913,907240", "el": "embedded", "eurl": "https://www.businessinsider.com\/every-first-on-the-internet-2013-2?op=1", "cc3_module": "https://s.ytimg.com\/yts\/swfbin\/player-vfl6Oox_F\/subtitles3_module.swf", "title": "Me at the zoo", "rel": "1", "iurl": `https://i1.ytimg.com\/vi\/${window.inv.videoId}\/hqdefault.jpg`}, "url": "https://s.ytimg.com\/yts\/swfbin\/player-vfl6Oox_F\/watch_as3.swf", "params": {"allowscriptaccess": "always", "bgcolor": "#000000", "allowfullscreen": "true"}},
-    'EMBED_HTML_TEMPLATE': "\u003ciframe width=\"__width__\" height=\"__height__\" src=\"__url__\" frameborder=\"0\" allowfullscreen\u003e\u003c\/iframe\u003e",
-    'EMBED_HTML_URL': "\/\/www.youtube.com\/embed\/__videoid__"
-  });
-    yt.setMsg('FLASH_UPGRADE', "\u003cdiv class=\"yt-alert yt-alert-default yt-alert-error  yt-alert-player\"\u003e  \u003cdiv class=\"yt-alert-icon\"\u003e\n    \u003cimg s\u0072c=\"https://s.ytimg.com\/yts\/img\/pixel-vfl3z5WfW.gif\" class=\"icon master-sprite\" alt=\"Alert icon\"\u003e\n  \u003c\/div\u003e\n\u003cdiv class=\"yt-alert-buttons\"\u003e\u003c\/div\u003e\u003cdiv class=\"yt-alert-content\" role=\"alert\"\u003e    \u003cspan class=\"yt-alert-vertical-trick\"\u003e\u003c\/span\u003e\n    \u003cdiv class=\"yt-alert-message\"\u003e\n            You need to upgrade your Adobe Flash Player to watch this video. \u003cbr\u003e \u003ca href=\"https://get.adobe.com\/flashplayer\/\"\u003eDownload it from Adobe.\u003c\/a\u003e\n    \u003c\/div\u003e\n\u003c\/div\u003e\u003c\/div\u003e");
-  yt.setMsg('PLAYER_FALLBACK', "The Adobe Flash Player or an HTML5 supported browser is required for video playback. \u003cbr\u003e \u003ca href=\"https://get.adobe.com\/flashplayer\/\"\u003eGet the latest Flash Player\u003c\/a\u003e \u003cbr\u003e \u003ca href=\"\/html5\"\u003eLearn more about upgrading to an HTML5 browser\u003c\/a\u003e");
-  yt.setMsg('QUICKTIME_FALLBACK', "The Adobe Flash Player or QuickTime is required for video playback. \u003cbr\u003e \u003ca href=\"https://get.adobe.com\/flashplayer\/\"\u003eGet the latest Flash Player\u003c\/a\u003e \u003cbr\u003e \u003ca href=\"https://www.apple.com\/quicktime\/download\/\"\u003eGet the latest version of QuickTime\u003c\/a\u003e");
-  yt.setMsg('AUTOPLAY_MESSAGE', {"case1": "Next video in 1", "other": "Next video in #"});
+        var invurl = "https://www.invidious.frantisekfiala.eu/api/v1/videos/" +
+            encodeURIComponent(videoId);
 
-writeEmbed();
-        
-    } else {window.document.body.innerHTML="video failed";}
+        var invidious = await fetch(invurl);
+
+        if (!invidious.ok) {
+            document.body.innerHTML = "video failed";
+            return;
+        }
+
+        window.inv = await invidious.json();
+
+        yt.setConfig({
+            'EVENT_ID': "AxCcUrLVPOXiiwK17oDgDw",
+            'VIDEO_ID': window.inv.videoId || videoId,
+            'POST_MESSAGE_ORIGIN': "*",
+            'EURL': "https://www.businessinsider.com/every-first-on-the-internet-2013-2?op=1",
+            'PL_ATT': false
+        });
+
+        yt.setConfig({
+            'PLAYER_CONFIG': {
+                "min_version": "8.0.0",
+
+                "url_v8":
+                    "https://s.ytimg.com/yts/swfbin/player-vfl6Oox_F/cps.swf",
+
+                "attrs": {
+                    "width": "100%",
+                    "height": "100%",
+                    "id": "video-player"
+                },
+
+                "assets": {
+                    "html": "/html5_player_template",
+                    "js": "//s.ytimg.com/yts/jsbin/html5player-vfl66X2C5.js",
+                    "css": "//s.ytimg.com/yts/cssbin/www-player-vflzE0TL9.css"
+                },
+
+                "html5": true,
+                "sts": 16031,
+
+                "url_v9as2":
+                    "https://s.ytimg.com/yts/swfbin/player-vfl6Oox_F/cps.swf",
+
+                "args": {
+                    "avg_rating": window.inv.rating || 0,
+
+                    "length_seconds":
+                        window.inv.lengthSeconds || 0,
+
+                    "video_id":
+                        window.inv.videoId || videoId,
+
+                    "threed_module":
+                        "https://s.ytimg.com/yts/swfbin/player-vfl6Oox_F/threed.swf",
+
+                    "ldpj": "-37",
+                    "allow_ratings": 1,
+
+                    "share_icons":
+                        "https://s.ytimg.com/yts/swfbin/player-vfl6Oox_F/sharing.swf",
+
+                    "allow_embed": 1,
+                    "cr": "IL",
+
+                    "playlist_module":
+                        "https://s.ytimg.com/yts/swfbin/player-vfl6Oox_F/playlist_module.swf",
+
+                    "hl": "en_US",
+                    "idpj": "0",
+                    "sendtmp": "1",
+
+                    "view_count":
+                        window.inv.viewCount || 0,
+
+                    "enablejsapi": "0",
+                    "is_html5_mobile_device": false,
+
+                    "streaminglib_module":
+                        "https://s.ytimg.com/yts/swfbin/player-vfl6Oox_F/streaminglib.swf",
+
+                    "endscreen_module":
+                        "https://s.ytimg.com/yts/swfbin/player-vfl6Oox_F/endscreen.swf",
+
+                    "fexp":
+                        "900225,935203,904825,907230,916623,901442,936912,936910,923305,936913,907240",
+
+                    "el": "embedded",
+
+                    "eurl":
+                        "https://www.businessinsider.com/every-first-on-the-internet-2013-2?op=1",
+
+                    "cc3_module":
+                        "https://s.ytimg.com/yts/swfbin/player-vfl6Oox_F/subtitles3_module.swf",
+
+                    "title":
+                        window.inv.title || "",
+
+                    "rel": "1",
+
+                    "iurl":
+                        "https://i1.ytimg.com/vi/" +
+                        (window.inv.videoId || videoId) +
+                        "/hqdefault.jpg"
+                },
+
+                "url":
+                    "https://s.ytimg.com/yts/swfbin/player-vfl6Oox_F/watch_as3.swf",
+
+                "params": {
+                    "allowscriptaccess": "always",
+                    "bgcolor": "#000000",
+                    "allowfullscreen": "true"
+                }
+            },
+
+            'EMBED_HTML_TEMPLATE':
+                "<iframe width=\"__width__\" height=\"__height__\" " +
+                "src=\"__url__\" frameborder=\"0\" allowfullscreen></iframe>",
+
+            'EMBED_HTML_URL':
+                "//www.youtube.com/embed/__videoid__"
+        });
+
+        yt.setMsg(
+            'FLASH_UPGRADE',
+            "<div class=\"yt-alert yt-alert-default yt-alert-error yt-alert-player\">" +
+                "<div class=\"yt-alert-icon\">" +
+                    "<img src=\"https://s.ytimg.com/yts/img/pixel-vfl3z5WfW.gif\" " +
+                    "class=\"icon master-sprite\" alt=\"Alert icon\">" +
+                "</div>" +
+                "<div class=\"yt-alert-buttons\"></div>" +
+                "<div class=\"yt-alert-content\" role=\"alert\">" +
+                    "<span class=\"yt-alert-vertical-trick\"></span>" +
+                    "<div class=\"yt-alert-message\">" +
+                        "You need to upgrade your Adobe Flash Player to watch this video. " +
+                        "<br>" +
+                        "<a href=\"https://get.adobe.com/flashplayer/\">" +
+                            "Download it from Adobe." +
+                        "</a>" +
+                    "</div>" +
+                "</div>" +
+            "</div>"
+        );
+
+        yt.setMsg(
+            'PLAYER_FALLBACK',
+            "The Adobe Flash Player or an HTML5 supported browser is required " +
+            "for video playback. <br>" +
+            "<a href=\"https://get.adobe.com/flashplayer/\">" +
+            "Get the latest Flash Player</a> <br>" +
+            "<a href=\"/html5\">Learn more about upgrading to an HTML5 browser</a>"
+        );
+
+        yt.setMsg(
+            'QUICKTIME_FALLBACK',
+            "The Adobe Flash Player or QuickTime is required for video playback. " +
+            "<br>" +
+            "<a href=\"https://get.adobe.com/flashplayer/\">" +
+            "Get the latest Flash Player</a> <br>" +
+            "<a href=\"https://www.apple.com/quicktime/download/\">" +
+            "Get the latest version of QuickTime</a>"
+        );
+
+        yt.setMsg(
+            'AUTOPLAY_MESSAGE',
+            {
+                "case1": "Next video in 1",
+                "other": "Next video in #"
+            }
+        );
+
+        writeEmbed();
+
+    } catch (error) {
+        console.error("Failed to load video:", error);
+        document.body.innerHTML = "video failed";
+    }
+})();
+</script>
 </script>    <script>
 ytcsi.span('st', 5);yt.setConfig({'TIMING_ACTION': "",'TIMING_INFO': {"e": "900225,935203,904825,907230,916623,901442", "yt_lt": "cold", "yt_li": 0, "yt_spf": 0, "ei": "AxCcUrLVPOXiiwK17oDgDw"}});    </script>
 </body></html>
