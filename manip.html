@@ -1,0 +1,91 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Parameter Manipulator</title> <style> * { box-sizing: border-box; } :root { --bg: #0b1020; --panel: #121a2d; --panel2: #18223a; --border: #2b3958; --text: #edf2ff; --muted: #8f9bb5; --accent: #6ea8fe; --green: #55d187; --red: #ff6b7a; --input: #0d1426; } body { margin: 0; min-height: 100vh; background: radial-gradient(circle at top right, #172957 0, transparent 35%), var(--bg); color: var(--text); font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; } .container { width: min(1400px, 95%); margin: 30px auto; } header { margin-bottom: 25px; } h1 { margin: 0 0 8px; font-size: 30px; } .subtitle { color: var(--muted); line-height: 1.5; } .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } .panel { background: rgba(18, 26, 45, .95); border: 1px solid var(--border); border-radius: 14px; padding: 18px; box-shadow: 0 15px 40px rgba(0,0,0,.25); } .panel h2 { margin: 0 0 14px; font-size: 17px; } textarea, input { width: 100%; border: 1px solid var(--border); background: var(--input); color: var(--text); border-radius: 8px; outline: none; padding: 11px 12px; font: inherit; } textarea:focus, input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(110,168,254,.12); } textarea { min-height: 300px; resize: vertical; font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; line-height: 1.5; } .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; } button { border: 0; border-radius: 8px; padding: 9px 13px; color: white; background: #263555; cursor: pointer; font-weight: 600; } button:hover { filter: brightness(1.15); } button.primary { background: #3978d8; } button.success { background: #238b57; } button.danger { background: #a93649; } .search { margin-bottom: 12px; } .parameters { display: flex; flex-direction: column; gap: 8px; max-height: 650px; overflow: auto; padding-right: 4px; } .param { display: grid; grid-template-columns: minmax(130px, .7fr) minmax(200px, 2fr) auto; gap: 8px; align-items: center; background: var(--panel2); border: 1px solid var(--border); border-radius: 9px; padding: 8px; } .param input { min-width: 0; } .key { color: #9ec5ff; font-family: monospace; } .value { font-family: monospace; } .count { color: var(--muted); font-size: 13px; margin-left: auto; } .status { margin-top: 10px; min-height: 20px; color: var(--muted); font-size: 13px; } .status.ok { color: var(--green); } .status.error { color: var(--red); } .section { margin-top: 20px; } .section-title { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; } .section-title h2 { margin: 0; } @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } .param { grid-template-columns: 1fr; } } </style> </head> <body> <div class="container">
+<header>
+    <h1>Encoded Parameter Manipulator</h1>
+    <div class="subtitle">
+        Decode, edit, and re-encode URL-style parameter strings.
+        Everything runs locally in your browser.
+    </div>
+</header>
+
+<div class="grid">
+
+    <!-- INPUT -->
+    <section class="panel">
+        <h2>Encoded Input</h2>
+
+        <textarea id="input" spellcheck="false"
+            placeholder="Paste an encoded parameter string here..."></textarea>
+
+        <div class="toolbar">
+            <button class="primary" onclick="decodeInput()">
+                Decode
+            </button>
+
+            <button onclick="loadExample()">
+                Load Example
+            </button>
+
+            <button onclick="clearAll()">
+                Clear
+            </button>
+        </div>
+
+        <div id="inputStatus" class="status"></div>
+    </section>
+
+    <!-- OUTPUT -->
+    <section class="panel">
+        <h2>Encoded Output</h2>
+
+        <textarea id="output" spellcheck="false"
+            placeholder="Your encoded result will appear here..."
+            readonly></textarea>
+
+        <div class="toolbar">
+            <button class="success" onclick="copyOutput()">
+                Copy Output
+            </button>
+
+            <button onclick="downloadOutput()">
+                Download .txt
+            </button>
+        </div>
+
+        <div id="outputStatus" class="status"></div>
+    </section>
+
+</div>
+
+<section class="panel section">
+
+    <div class="section-title">
+        <h2>Parameters</h2>
+        <span id="count" class="count">0 parameters</span>
+    </div>
+
+    <input
+        id="search"
+        class="search"
+        placeholder="Filter parameters..."
+        oninput="renderParameters()"
+    >
+
+    <div id="parameters" class="parameters"></div>
+
+    <div class="toolbar">
+        <button class="primary" onclick="addParameter()">
+            + Add Parameter
+        </button>
+
+        <button onclick="sortParameters()">
+            Sort by Name
+        </button>
+
+        <button class="success" onclick="encodeParameters()">
+            Encode Changes
+        </button>
+    </div>
+
+</section>
+
+</div> <script> "use strict"; let params = []; /* * Safely decode a value. * * decodeURIComponent() can throw when the input contains * malformed percent encoding, so we fall back to the original * value rather than breaking the whole application. */ function safeDecode(value) { try { return decodeURIComponent(value); } catch { return value; } } /* * Decode the parameter string. * * We intentionally split on "&" only once at the top level. * Values can themselves contain encoded "&" characters such * as "%26". */ function parseQueryString(input) { input = input.trim(); if (input.startsWith("?")) { input = input.substring(1); } if (!input) { return []; } return input.split("&").map(part => { const separator = part.indexOf("="); if (separator === -1) { return { key: safeDecode(part), value: "" }; } const encodedKey = part.substring(0, separator); const encodedValue = part.substring(separator + 1); return { key: safeDecode(encodedKey), value: safeDecode(encodedValue) }; }); } /* * Encode parameters back into URL-query syntax. */ function encodeQueryString(list) { return list .filter(p => p.key.trim() !== "") .map(p => { return encodeURIComponent(p.key) + "=" + encodeURIComponent(p.value); }) .join("&"); } function decodeInput() { const input = document.getElementById("input").value; try { params = parseQueryString(input); renderParameters(); setStatus( "inputStatus", `Decoded ${params.length} parameter${params.length === 1 ? "" : "s"}.`, "ok" ); encodeParameters(); } catch (error) { setStatus( "inputStatus", "Unable to decode the supplied string.", "error" ); } } function renderParameters() { const container = document.getElementById("parameters"); const search = document .getElementById("search") .value .toLowerCase(); container.innerHTML = ""; let visible = 0; params.forEach((param, index) => { const searchable = `${param.key} ${param.value}`.toLowerCase(); if (!searchable.includes(search)) { return; } visible++; const row = document.createElement("div"); row.className = "param"; const key = document.createElement("input"); key.className = "key"; key.value = param.key; key.placeholder = "Parameter name"; key.addEventListener("input", () => { params[index].key = key.value; encodeParameters(false); }); const value = document.createElement("input"); value.className = "value"; value.value = param.value; value.placeholder = "Value"; value.addEventListener("input", () => { params[index].value = value.value; encodeParameters(false); }); const remove = document.createElement("button"); remove.className = "danger"; remove.textContent = "Delete"; remove.onclick = () => { params.splice(index, 1); renderParameters(); encodeParameters(false); }; row.appendChild(key); row.appendChild(value); row.appendChild(remove); container.appendChild(row); }); document.getElementById("count").textContent = `${params.length} parameter${params.length === 1 ? "" : "s"}` + (search ? ` · ${visible} shown` : ""); } function addParameter() { params.push({ key: "new_parameter", value: "value" }); renderParameters(); encodeParameters(false); const container = document.getElementById("parameters"); setTimeout(() => { container.scrollTop = container.scrollHeight; }, 0); } function sortParameters() { params.sort((a, b) => a.key.localeCompare(b.key) ); renderParameters(); encodeParameters(false); } function encodeParameters(showStatus = true) { const output = encodeQueryString(params); document.getElementById("output").value = output; if (showStatus) { setStatus( "outputStatus", "Output updated.", "ok" ); } } async function copyOutput() { const output = document.getElementById("output").value; if (!output) { setStatus( "outputStatus", "There is nothing to copy.", "error" ); return; } try { await navigator.clipboard.writeText(output); setStatus( "outputStatus", "Copied to clipboard.", "ok" ); } catch { document.getElementById("output").select(); document.execCommand("copy"); setStatus( "outputStatus", "Copied to clipboard.", "ok" ); } } function downloadOutput() { const output = document.getElementById("output").value; const blob = new Blob( [output], { type: "text/plain;charset=utf-8" } ); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "parameters.txt"; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); } function clearAll() { params = []; document.getElementById("input").value = ""; document.getElementById("output").value = ""; renderParameters(); setStatus("inputStatus", ""); setStatus("outputStatus", ""); } function setStatus(id, message, type = "") { const element = document.getElementById(id); element.textContent = message; element.className = "status " + type; } /* * A small example based on the structure of the supplied data. * It intentionally uses harmless placeholder URLs rather than * old signed media URLs. */ function loadExample() { const example = "watermark=" + encodeURIComponent( ",https://example.com/watermark.png,https://example.com/hd-watermark.png" ) + "&" + "author=" + encodeURIComponent("Example Channel") + "&" + "title=" + encodeURIComponent("Example video title") + "&" + "view_count=142611" + "&" + "length_seconds=6799" + "&" + "video_id=E8eCrFv7Bi8" + "&" + "fmt_list=" + encodeURIComponent("18/640x360/9/0/115,5/320x240/7/0/0") + "&" + "allow_embed=1"; document.getElementById("input").value = example; decodeInput(); } renderParameters(); </script> </body> </html>
